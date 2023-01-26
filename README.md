@@ -17,7 +17,7 @@ This forward-feeding implementation is simple, yet creating complete end-to-end 
 You have two endpoints.
 
 1. Fetch Users /api/Users
-1. Fetch User Account Information by Id /api/Users?Id={Users.id}
+1. Fetch User Account Information by Id /api/Users?Id={Users.Id}
 
 Traditionally, if you had to execute these endpoints in succession, you would need to
 
