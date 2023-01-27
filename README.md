@@ -6,6 +6,8 @@ This library allows developers and test engineers to quickly build API Integrati
 
 (It feels very similar to Entity Framework -- but for APIs)
 
+Check out the [wiki](https://github.com/montraydavis/APIFlow/wiki/Overview) for a more in-depth overview!
+
 # Forward-Feeding Endpoints
 
 The main purpose of this library is to allow sequential API execution and testing without the necessity of re-writing code to wire up ModelA to ModelB.
