@@ -20,8 +20,16 @@
 		<PackageTags>API;API Integration Testing</PackageTags>
 		<PackageReleaseNotes>Initial Release</PackageReleaseNotes>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<!--<PackageLicenseFile>LICENSE.md</PackageLicenseFile>-->
 	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <Content Include="LICENSE.md">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
 
 	<ItemGroup>
 	  <None Include="..\..\README.md">
@@ -36,7 +44,8 @@
 
 	<ItemGroup>
 	  <None Update="LICENSE.md">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
 
