@@ -6,7 +6,7 @@ This library allows developers and test engineers to quickly build API Integrati
 
 (It feels very similar to Entity Framework -- but for APIs)
 
-Check out the [wiki](https://github.com/montraydavis/APIFlow/wiki/Overview) for a more in-depth overview!
+Check out the [wiki](https://github.com/montraydavis/APIFlow/wiki) for a more in-depth overview!
 
 # Forward-Feeding Endpoints
 
