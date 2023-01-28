@@ -11,8 +11,9 @@ namespace APIFlow.Tests.Contexts
         public override void ConfigureEndpoint(ref string endpoint, EndpointInputModel inputModel, bool randomizedInput = false)
         {
             base.ConfigureEndpoint(ref endpoint, inputModel, randomizedInput);
-            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
+
         /// <summary>
         /// Configure inputModel which are forwarded to the next endpoint(s).
         /// </summary>
@@ -20,8 +21,8 @@ namespace APIFlow.Tests.Contexts
         [HttpGet()]
         public override void ApplyContext(EndpointInputModel inputModel)
         {
-            base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value[0].Id);
-            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value?[0].Id ?? 0);
+            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
 
         public UserInformationContext_BadConfiguration(UserInformation baseObject, EndpointInputModel inputModel) : base(baseObject, inputModel)

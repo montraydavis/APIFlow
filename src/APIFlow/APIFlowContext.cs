@@ -147,7 +147,7 @@ namespace APIFlow
         /// <param name="content">Request Payload.</param>
         /// <returns>Http Response Message.</returns>
         /// <exception cref="Exception">Error Thrown on Verb Attribute Resolution Failure.</exception>
-        private async Task<HttpResponseMessage> ExecuteEndpoint<T>(T content) where T : ApiContext
+        private HttpResponseMessage ExecuteEndpoint<T>(T content) where T : ApiContext
         {
             return this.ExecuteEndpoint(content, out _);
         }
@@ -245,7 +245,7 @@ namespace APIFlow
             {
                 isList = ctx.ToList().First().ObjectValue?.GetType().GetGenericTypeDefinition() == typeof(List<>);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 isList = false;
             }
@@ -255,7 +255,7 @@ namespace APIFlow
                 if (isList == false)
                     isArray = ctx.First().ObjectValue!.GetType().IsArray;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 isArray = false;
             }

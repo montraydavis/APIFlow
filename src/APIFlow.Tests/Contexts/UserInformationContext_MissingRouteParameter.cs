@@ -11,7 +11,7 @@ namespace APIFlow.Tests.Contexts
         {
             base.ConfigureEndpoint(ref endpoint, inputModel, randomizedInput);
 
-            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
         /// <summary>
         /// Configure inputModel which are forwarded to the next endpoint(s).
@@ -21,8 +21,8 @@ namespace APIFlow.Tests.Contexts
         [Route()]
         public override void ApplyContext(EndpointInputModel inputModel)
         {
-            base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value[0].Id);
-            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value?[0].Id ?? 0);
+            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
 
         public UserInformationContext_MissingRouteParameter(UserInformation baseObject, EndpointInputModel inputModel) : base(baseObject, inputModel)

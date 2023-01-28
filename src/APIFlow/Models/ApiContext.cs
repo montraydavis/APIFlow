@@ -138,7 +138,8 @@ namespace APIFlow.Models
             var selectedInput = input[0];
 
             if (bindCallback != null
-                && selectedInput != null)
+                && selectedInput != null
+                && this.Value != null)
             {
                 bindCallback.Invoke(selectedInput, this.Value);
             }

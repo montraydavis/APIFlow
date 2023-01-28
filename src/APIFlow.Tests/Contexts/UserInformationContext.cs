@@ -13,7 +13,7 @@ namespace APIFlow.Tests.Contexts
         {
             base.ConfigureEndpoint(ref endpoint, inputModel, randomizedInput);
 
-            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
 
         /// <summary>

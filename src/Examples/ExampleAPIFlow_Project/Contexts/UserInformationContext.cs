@@ -10,7 +10,7 @@ namespace ExampleAPIFlow_Project.Contexts
         {
             base.ConfigureEndpoint(ref endpoint, inputModel, randomizedInput);
 
-            ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
         /// <summary>
         /// Configure inputModel which are forwarded to the next endpoint(s).
@@ -20,8 +20,8 @@ namespace ExampleAPIFlow_Project.Contexts
         [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/UserInformation")]
         public override void ApplyContext(EndpointInputModel inputModel)
         {
-            ConfigureModel<UserContext>((u, o) => o.Id = u.Value[0].Id);
-            ConfigureEndpoint<UserContext>("Id", (u) => u.Value[0].Id);
+            ConfigureModel<UserContext>((u, o) => o.Id = u.Value?[0].Id ?? 0);
+            ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id ?? 0);
         }
 
         public UserInformationContext(UserInformation baseObject, EndpointInputModel inputModel) : base(baseObject, inputModel)

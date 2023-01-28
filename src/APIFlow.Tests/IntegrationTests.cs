@@ -6,7 +6,6 @@ namespace APIFlow.Tests
     {
         private APIFlowContext _context;
 
-
         [SetUp]
         public void Setup()
         {

@@ -123,7 +123,7 @@ namespace APIFlow.Tests
 
             Assert.Throws<APIFlowModelException>(() =>
             {
-                this._moqUserInformationMissingRoute.Object.ConfigureModel<UserInformationContext>((u, o) => u.Value.Id = o.Id);
+                this._moqUserInformationMissingRoute.Object.ConfigureModel<UserInformationContext>((u, o) => u.Value!.Id = o.Id);
             });
         }
         [Test]
