@@ -1,4 +1,4 @@
-[![alt text](https://img.shields.io/badge/NuGET%20APIFlow-1.1.0-blue "Flow")](https://www.nuget.org/packages/APIFlow)
+[![alt text](https://img.shields.io/badge/NuGET%20APIFlow-1.1.1-blue "Flow")](https://www.nuget.org/packages/APIFlow)
 
 # APIFlow
 
