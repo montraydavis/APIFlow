@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PackageId>APIFlow</PackageId>
 		<Version>1.1.0</Version>
@@ -38,10 +37,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\APIFlow.Regression\APIFlow.Regression.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

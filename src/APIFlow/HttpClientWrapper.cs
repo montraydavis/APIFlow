@@ -1,4 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace APIFlow
 {
@@ -68,7 +73,7 @@ namespace APIFlow
         {
             var contentDict = isQueryParameters ? JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(content)) : null;
             var contentDictList = isQueryParameters ? contentDict?.ToList() : null;
-            var requestContent = isQueryParameters && contentDictList != null ? new FormUrlEncodedContent(contentDictList) : new StringContent(JsonConvert.SerializeObject(content)) as HttpContent;
+            var requestContent = isQueryParameters && contentDictList != null ? new FormUrlEncodedContent(contentDictList!) : new StringContent(JsonConvert.SerializeObject(content)) as HttpContent;
 
             var request = new HttpRequestMessage()
             {

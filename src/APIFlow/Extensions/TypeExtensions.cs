@@ -1,4 +1,8 @@
-﻿namespace APIFlow.Extensions
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace APIFlow.Extensions
 {
     public static class TypeExtensions
     {

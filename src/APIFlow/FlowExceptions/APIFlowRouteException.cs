@@ -1,4 +1,6 @@
-﻿namespace APIFlow.FlowExceptions
+﻿using System;
+
+namespace APIFlow.FlowExceptions
 {
     public class APIFlowRouteException : Exception
     {

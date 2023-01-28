@@ -1,4 +1,6 @@
-﻿namespace APIFlow.Regression
+﻿using System;
+
+namespace APIFlow.Regression
 {
     public class RegressionStatistic
     {
