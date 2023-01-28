@@ -1,4 +1,5 @@
 ﻿using APIFlow.Tests.Contexts;
+using NUnit.Framework;
 using System.Web.Http;
 
 namespace APIFlow.Tests
@@ -16,21 +17,10 @@ namespace APIFlow.Tests
         }
 
         [Test]
-        [Theory]
-        public void APIFlowContext_GetHttpVerbMethod(object httpVerbAttribute)
-        {
-            Assert.That(httpVerbAttribute as Attribute, Is.Not.Null);
-
-            var verb = this.context.GetHttpVerbMethod(httpVerbAttribute as Attribute);
-
-            Assert.That(httpVerbAttribute.GetType().FullName?.ToUpper(), Does.Contain(verb.Method.ToUpper()));
-        }
-
-        [Test]
         public void APIFlowContext_End2End()
         {
-            this.context.Walk<UserContext>()
-                .Walk<UserInformationContext>();
+            this.context.Execute<UserContext>()
+                .Execute<UserInformationContext>();
         }
     }
 }

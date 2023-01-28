@@ -4,7 +4,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PackageId>APIFlow</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Authors>Montray Davis</Authors>
 		<Company>Montray Davis</Company>
 		<PackageDescription>The ultimate solution for quick API Integration testing.</PackageDescription>

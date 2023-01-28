@@ -1,12 +1,15 @@
 ﻿using APIFlow;
 using APIFlow.Endpoint;
 using APIFlow.Models;
+using ExampleAPIFlow_Project.Fixtures;
 using System.Web.Http;
 
 namespace ExampleAPIFlow_Project.Contexts
 {
     public class UserContext : ApiContext<List<User>>
     {
+        public override bool HasBody => false;
+
         [HttpGet()]
         [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/Users")]
         public override void ApplyContext(EndpointInputModel model)

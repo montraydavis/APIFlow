@@ -1,4 +1,7 @@
 using APIFlow;
+using ExampleAPIFlow_Project.Contexts;
+using ExampleAPIFlow_Project.Fixtures;
+using NUnit.Framework;
 
 namespace ExampleAPIFlow_Project
 {
@@ -28,8 +31,8 @@ namespace ExampleAPIFlow_Project
             var fakeDbItems = GetUsersFromDatabase();
 
             // Execute /users endpoint
-            var users = context.Walk<UserContext>().Response;
-            var userInfo = context.Walk<UserInformationContext>().Response;
+            var users = context.Execute<UserContext>().Response;
+            var userInfo = context.Execute<UserInformationContext>().Response;
 
             Assert.That(users, Is.Not.Null);
             Assert.That(userInfo, Is.Not.Null);

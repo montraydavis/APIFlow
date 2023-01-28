@@ -1,4 +1,5 @@
 ﻿using APIFlow.Tests.Contexts;
+using NUnit.Framework;
 
 namespace APIFlow.Tests
 {
@@ -15,8 +16,8 @@ namespace APIFlow.Tests
         [Test]
         public void Integration_WalkChain()
         {
-            this._context.Walk<UserContext>()
-                .Walk<UserInformationContext>((userInformationContext, inputModel) =>
+            this._context.Execute<UserContext>()
+                .Execute<UserInformationContext>((userInformationContext, inputModel) =>
                 {
                     userInformationContext.ConfigureModel<UserContext>((u, o) => o.Id = u.Value?[0].Id ?? 0);
                 });

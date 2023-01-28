@@ -15,7 +15,7 @@ namespace APIFlow.Models
 
         internal EndpointInputModel Inputs { get; private set; }
 
-        public virtual bool HasBody { get; internal set; }
+        public virtual bool HasBody { get; internal set; } = true;
         public object? ObjectValue { get; internal set; }
 
         public string EndpointUrl { get; internal set; }

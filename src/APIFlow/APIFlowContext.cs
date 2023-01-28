@@ -25,40 +25,6 @@ namespace APIFlow
         public EndpointInputModel Inputs { get; private set; }
 
         /// <summary>
-        /// Resolve HttpMethod from ASP.NET Action Http Method Provider
-        /// </summary>
-        /// <param name="httpMethodProvider">Method Provider.</param>
-        /// <returns>Http Method.</returns>
-        /// <exception cref="Exception">Unsupported method exception.</exception>
-        private HttpMethod ResolveHttpMethod(IActionHttpMethodProvider httpMethodProvider)
-        {
-            if (httpMethodProvider is HttpGetAttribute)
-            {
-                return HttpMethod.Get;
-            }
-            else if (httpMethodProvider is HttpPostAttribute)
-            {
-                return HttpMethod.Post;
-            }
-            else if (httpMethodProvider is HttpPutAttribute)
-            {
-                return HttpMethod.Put;
-            }
-            else if (httpMethodProvider is HttpPatchAttribute)
-            {
-                return HttpMethod.Patch;
-            }
-            else if (httpMethodProvider is HttpDeleteAttribute)
-            {
-                return HttpMethod.Delete;
-            }
-            else
-            {
-                throw new Exception("Http method not supported.");
-            }
-        }
-
-        /// <summary>
         /// Append new item to chain.
         /// </summary>
         /// <typeparam name="T">Type of T.</typeparam>
@@ -81,7 +47,7 @@ namespace APIFlow
         /// <param name="resp"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private IReadOnlyList<T> ResolveHttpResponse<T>(HttpResponseMessage resp, Action<T, EndpointInputModel>? overrideContext = null) where T : ApiContext
+        private IReadOnlyList<T> ResolveHttpResponse<T>(HttpResponseMessage resp) where T : ApiContext
         {
             var modelObjectType = typeof(T).BaseType?.GetGenericArguments()[0];
             var responseBody = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -161,7 +127,7 @@ namespace APIFlow
         /// </summary>
         /// <param name="httpVerbAttribute">Verb Attribute.</param>
         /// <returns>Http Method | Verb</returns>
-        public HttpMethod GetHttpVerbMethod(Attribute httpVerbAttribute)
+        private HttpMethod GetHttpVerbMethod(Attribute httpVerbAttribute)
         {
             var httpRequestMethod = HttpMethod.Get;
             switch (httpVerbAttribute.GetType().Name)
@@ -271,13 +237,13 @@ namespace APIFlow
         }
 
         /// <summary>
-        /// Walk the API Chain of Sequence.
+        /// Execute API Context of type T.
         /// </summary>
         /// <typeparam name="T">Context Type of T</typeparam>
         /// <param name="overrideContext">Context Setup Override.</param>
         /// <param name="aggregateContext">Aggregate Contexts?</param>
         /// <returns>APIFlow Context</returns>
-        public APIFlowContext Walk<T>(Action<T, EndpointInputModel>? overrideContext = null,
+        public APIFlowContext Execute<T>(Action<T, EndpointInputModel>? overrideContext = null,
             bool aggregateContext = false) where T : ApiContext
         {
             var fullName = typeof(T).FullName ?? "Unknown";
@@ -298,7 +264,7 @@ namespace APIFlow
 
             var requestTimestamp = DateTime.UtcNow;
             var resp = this.ExecuteEndpoint(instances[0], out HttpClient httpClient);
-            var respInstance = this.ResolveHttpResponse(resp, overrideContext);
+            var respInstance = this.ResolveHttpResponse<T>(resp);
 
             this.ApplyContext(respInstance, overrideContext);
 

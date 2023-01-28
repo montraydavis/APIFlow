@@ -3,6 +3,7 @@ using APIFlow.FlowExceptions;
 using APIFlow.Tests.Contexts;
 using APIFlow.Tests.Fixtures;
 using Moq;
+using NUnit.Framework;
 
 namespace APIFlow.Tests
 {
