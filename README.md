@@ -38,7 +38,7 @@ With APIFlow, step 2 & 3 is removed as the forward-feed capabilities is automati
 
 ```
 
-public class UserContext : ApiContext<List<User>>
+public class UserContext : ApiContext<List<User>, HTTPDataExtender>
 {
     [HttpGet()]
     [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/Users")]
@@ -61,7 +61,7 @@ public class UserContext : ApiContext<List<User>>
     }
 }
 
-public class UserInformationContext : ApiContext<UserInformation>
+public class UserInformationContext : ApiContext<UserInformation, HTTPDataExtender>
 {
     public override void ConfigureEndpoint(ref string endpoint, EndpointInputModel inputModel, bool randomizedInput = false)
     {
