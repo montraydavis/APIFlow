@@ -30,7 +30,7 @@ Traditionally, if you had to execute these endpoints in succession, you would ne
 
 With APIFlow, step 2 & 3 is removed as the forward-feed capabilities is automatic with a one-time configuration setup.
 
-![alt text](assets/api-flow-chart.png "Flow")
+![alt text](https://github.com/montraydavis/APIFlow/blob/main/assets/api-flow-chart.png "Flow")
 
 # Example Context
 

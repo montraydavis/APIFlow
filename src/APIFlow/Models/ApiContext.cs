@@ -8,13 +8,14 @@ namespace APIFlow.Models
 {
     public abstract class ApiContext
     {
-        public object? ObjectValue { get; internal set; }
-
-        public string EndpointUrl { get; internal set; }
-
         internal HttpClientWrapper HttpWrapper;
 
         internal EndpointInputModel Inputs { get; private set; }
+
+        public virtual bool HasBody { get; internal set; }
+        public object? ObjectValue { get; internal set; }
+
+        public string EndpointUrl { get; internal set; }
 
         /// <summary>
         /// Get Inputs by Type.
@@ -104,15 +105,15 @@ namespace APIFlow.Models
 
     public abstract class ApiContext<TBase> : ApiContext
     {
+        public new virtual bool HasBody { get; internal set; }
         private TBase? _obj;
 
-        public TBase Value
+        public Type ValueType { get; }
+
+        public virtual TBase? Value
         {
             get
             {
-                if (_obj == null)
-                    throw new Exception();
-
                 return this._obj;
             }
 
@@ -150,6 +151,7 @@ namespace APIFlow.Models
 
         public ApiContext(TBase? baseObject, EndpointInputModel inputModel) : base(inputModel)
         {
+            this.ValueType = typeof(TBase);
             this.Value = baseObject ?? Activator.CreateInstance<TBase>();
         }
 

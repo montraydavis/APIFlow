@@ -1,6 +1,5 @@
 using APIFlow.Endpoint;
 using APIFlow.FlowExceptions;
-using APIFlow.Models;
 using APIFlow.Tests.Contexts;
 using APIFlow.Tests.Fixtures;
 using Moq;
@@ -9,7 +8,6 @@ namespace APIFlow.Tests
 {
     public sealed partial class ForwardFeedTests
     {
-
         private Mock<UserInformationContext>? _moqUserInformation;
         private Mock<UserInformationContext_BadConfiguration>? _moqUserInformationBadConfiguration;
         private Mock<UserInformationContext_MissingRoute>? _moqUserInformationMissingRoute;
@@ -62,8 +60,6 @@ namespace APIFlow.Tests
             this._inputModel = new EndpointInputModel();
         }
 
-
-
         [Test]
         [Theory]
         public void ForwardFeed_ConfigureUrl(User user)
@@ -72,6 +68,8 @@ namespace APIFlow.Tests
 
             Assert.That(this._moqUserInformation, Is.Not.Null);
             Assert.That(this._tmpUserInformationContext, Is.Not.Null);
+
+            this._moqUserInformation.SetupGet(e => e.Value).Returns(new UserInformation() { Id = 0 });
 
             this._moqUserInformation.Object.ResolveEndpointUrl(this._tmpUserInformationContext);
             this._moqUserInformation.Object.ApplyContext(_inputModel);
@@ -88,9 +86,30 @@ namespace APIFlow.Tests
             Assert.That(this._moqUserInformation, Is.Not.Null);
             Assert.That(this._tmpUserInformationContext, Is.Not.Null);
 
+            this._moqUserInformation.SetupGet(e => e.Value).Returns(new UserInformation() { Id = 999 });
+
             this._moqUserInformation.Object.ResolveEndpointUrl(this._tmpUserInformationContext);
             this._moqUserInformation.Object.ApplyContext(_inputModel);
 
+            Assert.That(this._moqUserInformation.Object.Value, Is.Not.Null);
+            Assert.That(this._moqUserInformation.Object.Value.Id, Is.EqualTo(user.Id));
+        }
+
+        [Test]
+        [Theory]
+        public void ForwardFeed_ConfigureModel_AggregateC(User user)
+        {
+            this.Setup(user);
+
+            Assert.That(this._moqUserInformation, Is.Not.Null);
+            Assert.That(this._tmpUserInformationContext, Is.Not.Null);
+
+            this._moqUserInformation.SetupGet(e => e.Value).Returns(new UserInformation() { Id = 999 });
+
+            this._moqUserInformation.Object.ResolveEndpointUrl(this._tmpUserInformationContext);
+            this._moqUserInformation.Object.ApplyContext(_inputModel);
+
+            Assert.That(this._moqUserInformation.Object.Value, Is.Not.Null);
             Assert.That(this._moqUserInformation.Object.Value.Id, Is.EqualTo(user.Id));
         }
 
@@ -130,8 +149,10 @@ namespace APIFlow.Tests
             Assert.That(this._moqUserInformationBadConfiguration, Is.Not.Null);
             Assert.That(this._tmpUserInformationBadConfigurationContext, Is.Not.Null);
 
-            this._moqUserInformationBadConfiguration.Object.ResolveEndpointUrl(this._tmpUserInformationBadConfigurationContext);
-            this._moqUserInformationBadConfiguration.Object.ApplyContext(_inputModel);
+            Assert.Throws<APIFlowRouteException>(() =>
+            {
+                this._moqUserInformationBadConfiguration.Object.ResolveEndpointUrl(this._tmpUserInformationBadConfigurationContext);
+            });
         }
         #endregion
     }

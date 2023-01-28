@@ -18,7 +18,6 @@ namespace APIFlow.Tests.Contexts
         /// </summary>
         /// <param name="inputModel">Input Model.</param>
         [HttpGet()]
-        [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/UserInformation")]
         public override void ApplyContext(EndpointInputModel inputModel)
         {
             base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value[0].Id);

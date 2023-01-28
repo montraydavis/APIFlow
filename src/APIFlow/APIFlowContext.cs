@@ -1,6 +1,8 @@
 ﻿using APIFlow.Endpoint;
 using APIFlow.Models;
+using APIFlow.Regression;
 using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Web.Http;
@@ -10,11 +12,20 @@ namespace APIFlow
 {
     public class APIFlowContext
     {
+        private IList<RegressionStatistic> _statistics { get; set; }
         private IReadOnlyList<ApiContext>? _previousInput;
         private string? _previousTypeName;
+
         public IReadOnlyList<ApiContext>? Response { get; private set; }
         public IReadOnlyList<ApiContext> Chain { get; private set; }
+        public EndpointInputModel Inputs { get; private set; }
 
+        /// <summary>
+        /// Resolve HttpMethod from ASP.NET Action Http Method Provider
+        /// </summary>
+        /// <param name="httpMethodProvider">Method Provider.</param>
+        /// <returns>Http Method.</returns>
+        /// <exception cref="Exception">Unsupported method exception.</exception>
         private HttpMethod ResolveHttpMethod(IActionHttpMethodProvider httpMethodProvider)
         {
             if (httpMethodProvider is HttpGetAttribute)
@@ -43,7 +54,12 @@ namespace APIFlow
             }
         }
 
-        private IReadOnlyList<ApiContext> WalkChain<T>() where T : ApiContext
+        /// <summary>
+        /// Append new item to chain.
+        /// </summary>
+        /// <typeparam name="T">Type of T.</typeparam>
+        /// <returns>Read Only List of ApiContext of type T.</returns>
+        private IReadOnlyList<T> AppendChainItem<T>() where T : ApiContext
         {
             var tmpItem = new[] { Activator.CreateInstance(typeof(T), null, this.Inputs) };
             var instances = tmpItem
@@ -54,10 +70,15 @@ namespace APIFlow
             return instances;
         }
 
-        private IReadOnlyList<T> ResolveHttpInstance<T>(HttpResponseMessage resp) where T : ApiContext
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="resp"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private IReadOnlyList<T> ResolveHttpResponse<T>(HttpResponseMessage resp, Action<T, EndpointInputModel>? overrideContext = null) where T : ApiContext
         {
-            resp.EnsureSuccessStatusCode();
-
             var modelObjectType = typeof(T).BaseType?.GetGenericArguments()[0];
             var responseBody = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             var modelObjectInstances = JsonConvert.DeserializeObject(responseBody, modelObjectType);
@@ -68,29 +89,23 @@ namespace APIFlow
             var reTyped = Convert.ChangeType(modelObjectInstances, modelObjectType);
             var tmpResponses = Activator.CreateInstance(typeof(T), reTyped, this.Inputs) as T;
 
-
             var endpointResponses = new[] { tmpResponses }
             .Cast<T>()
             .ToList()
             .AsReadOnly();
 
-            this.ApplyContext(endpointResponses, null);
-
             return endpointResponses;
-
-
         }
 
-        public EndpointInputModel Inputs { get; private set; }
-
         /// <summary>
-        /// Execute Context Endpoint.
+        /// Execute an endpoint.
         /// </summary>
-        /// <typeparam name="T">Context of Type T.</typeparam>
-        /// <param name="content">Request Payload.</param>
+        /// <typeparam name="T">Type of T.</typeparam>
+        /// <param name="content">Request Body Content.</param>
+        /// <param name="httpClient">Http Client Reference.</param>
         /// <returns>Http Response Message.</returns>
-        /// <exception cref="Exception">Error Thrown on Verb Attribute Resolution Failure.</exception>
-        private async Task<HttpResponseMessage> ExecuteEndpoint<T>(T content) where T : ApiContext
+        /// <exception cref="Exception"></exception>
+        private HttpResponseMessage ExecuteEndpoint<T>(T content, out HttpClient httpClient) where T : ApiContext
         {
             var httpClientWrapper = new HttpClientWrapper();
 
@@ -111,15 +126,30 @@ namespace APIFlow
 
             var httpVerbAttribute = Activator.CreateInstance(attribType) as Attribute;
 
-
             if (httpVerbAttribute == null)
                 throw new Exception($"Type '{typeof(T).FullName}.ApplyContext' is missing '{typeof(IActionHttpMethodProvider).FullName}' attribute.");
 
             var httpVerb = this.GetHttpVerbMethod(httpVerbAttribute);
 
-            var resp = await httpClientWrapper.RawRequest(httpVerb, content.EndpointUrl, content.ObjectValue, false);
+            var resp = httpClientWrapper
+                .RawRequest(httpVerb, content.EndpointUrl, content.HasBody ? content.ObjectValue : null, false)
+                .GetAwaiter()
+                .GetResult();
 
+            httpClient = httpClientWrapper.Client;
             return resp;
+        }
+
+        /// <summary>
+        /// Execute Context Endpoint.
+        /// </summary>
+        /// <typeparam name="T">Context of Type T.</typeparam>
+        /// <param name="content">Request Payload.</param>
+        /// <returns>Http Response Message.</returns>
+        /// <exception cref="Exception">Error Thrown on Verb Attribute Resolution Failure.</exception>
+        private async Task<HttpResponseMessage> ExecuteEndpoint<T>(T content) where T : ApiContext
+        {
+            return this.ExecuteEndpoint(content, out _);
         }
 
         /// <summary>
@@ -159,9 +189,9 @@ namespace APIFlow
         /// <param name="instance">Api Context Instance.</param>
         /// <param name="overrideContext">Context override.</param>
         /// <param name="aggregateContext">Apply all contexts.</param>
-        private void ApplyContext(IEnumerable<ApiContext> instance,
-            Action<EndpointInputModel>? overrideContext,
-            bool aggregateContext = false)
+        private void ApplyContext<T>(IEnumerable<ApiContext> instance,
+            Action<T, EndpointInputModel>? overrideContext,
+            bool aggregateContext = false) where T : ApiContext
         {
             var applyOverrideContext = false;
             var applyInstanceContext = false;
@@ -179,21 +209,24 @@ namespace APIFlow
                     applyInstanceContext = true;
             }
 
-            if (applyInstanceContext
-                && instance != null)
+            if (instance != null)
                 foreach (var i in instance)
                 {
                     var ep = i.EndpointUrl;
                     i.ResolveEndpointUrl(i);
                     i.ConfigureClient(ref i.HttpWrapper);
                     i.ConfigureEndpoint(ref ep, this.Inputs);
-                    i.ApplyContext(this.Inputs);
 
+                    if ((applyInstanceContext || aggregateContext)
+                        && i.ObjectValue != null)
+                    {
+                        i.ApplyContext(this.Inputs);
+                    }
+                    if (applyOverrideContext
+                        && overrideContext != null)
+                        overrideContext.Invoke((T)i, this.Inputs);
                 }
 
-            if (applyOverrideContext
-                && overrideContext != null)
-                overrideContext.Invoke(this.Inputs);
         }
 
         /// <summary>
@@ -203,14 +236,34 @@ namespace APIFlow
         /// <typeparam name="TModel">Context Value Type.</typeparam>
         /// <param name="ctx">Context List.</param>
         /// <returns>List of Type TModel</returns>
-        public IReadOnlyList<TModel> GetValue<T, TModel>(IReadOnlyList<ApiContext> ctx) where T : ApiContext where TModel: class
+        public TModel GetValue<T, TModel>(IReadOnlyList<ApiContext> ctx) where T : ApiContext where TModel : class
         {
-            var isList = ctx.ToList().First().ObjectValue?.GetType().GetGenericTypeDefinition() == typeof(List<>);
+            var isList = false;
+            var isArray = false;
 
-            if (isList)
-                return ctx.ToList().SelectMany(x => (IList<TModel>)x.ObjectValue!).ToArray();
+            try
+            {
+                isList = ctx.ToList().First().ObjectValue?.GetType().GetGenericTypeDefinition() == typeof(List<>);
+            }
+            catch (Exception ex)
+            {
+                isList = false;
+            }
+
+            try
+            {
+                if (isList == false)
+                    isArray = ctx.First().ObjectValue!.GetType().IsArray;
+            }
+            catch (Exception ex)
+            {
+                isArray = false;
+            }
+
+            if (isList || isArray)
+                return JsonConvert.DeserializeObject<TModel>(JsonConvert.SerializeObject(ctx.SelectMany(x => (x.ObjectValue! as IEnumerable)!.Cast<object>())));
             else
-                return new []{(ctx.ToList().First().ObjectValue as TModel)!};
+                return (ctx.ToList().First().ObjectValue as TModel)!;
         }
 
         /// <summary>
@@ -220,15 +273,13 @@ namespace APIFlow
         /// <param name="overrideContext">Context Setup Override.</param>
         /// <param name="aggregateContext">Aggregate Contexts?</param>
         /// <returns>APIFlow Context</returns>
-        public APIFlowContext Walk<T>(Action<EndpointInputModel>? overrideContext = null,
+        public APIFlowContext Walk<T>(Action<T, EndpointInputModel>? overrideContext = null,
             bool aggregateContext = false) where T : ApiContext
         {
             var fullName = typeof(T).FullName ?? "Unknown";
 
             if (Inputs.ContainsKey(fullName) == false)
-            {
                 Inputs.Add(fullName, new List<object>());
-            }
 
             if (_previousInput != null
                 && string.IsNullOrWhiteSpace(_previousTypeName) == false)
@@ -237,27 +288,43 @@ namespace APIFlow
                     this.Inputs[this._previousTypeName].Add(prevInput);
             }
 
-            var instances = this.WalkChain<T>();
+            var instances = this.AppendChainItem<T>();
 
-            this.ApplyContext(instances, overrideContext, aggregateContext);
+            this.ApplyContext<T>(instances, overrideContext, aggregateContext);
 
-            var resp = this.ExecuteEndpoint((T)instances[0]).GetAwaiter().GetResult();
-            var respInstance = this.ResolveHttpInstance<T>(resp);
+            var requestTimestamp = DateTime.UtcNow;
+            var resp = this.ExecuteEndpoint(instances[0], out HttpClient httpClient);
+            var respInstance = this.ResolveHttpResponse(resp, overrideContext);
 
-            var newChain = this.Chain.ToList().Concat(respInstance).ToList();
+            this.ApplyContext(respInstance, overrideContext);
 
-            this.Response = respInstance;
+            var endpointExecutionInfo = new EndpointExecutionInfo(instances[0].EndpointUrl, httpClient.DefaultRequestHeaders.ToDictionary(x => x.Key, x => x.Value), instances[0].HasBody ? JsonConvert.SerializeObject(instances[0].ObjectValue) : null,
+                resp.Headers.ToDictionary(x => x.Key, x => x.Value),
+                resp.Content.ReadAsStringAsync().GetAwaiter().GetResult(),
+                resp.ReasonPhrase,
+                resp.StatusCode);
+
+            this.Response =
+                (_previousInput = respInstance);
+
+            _previousTypeName = fullName;
+
+            var newChain = this.Chain
+                .Concat(respInstance)
+                .ToList();
 
             this.Chain = new ReadOnlyCollection<ApiContext>(newChain);
 
-            _previousInput = respInstance;
-            _previousTypeName = fullName;
+            var regressionStatistic = new RegressionStatistic(requestTimestamp, DateTime.UtcNow, endpointExecutionInfo);
+
+            this._statistics.Add(regressionStatistic);
 
             return this;
         }
 
         public APIFlowContext()
         {
+            this._statistics = new List<RegressionStatistic>();
             this.Chain = Enumerable.Empty<ApiContext>().ToList().AsReadOnly();
             this.Inputs = new EndpointInputModel();
         }

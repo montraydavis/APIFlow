@@ -4,6 +4,8 @@ namespace APIFlow
 {
     public class HttpClientWrapper
     {
+        public HttpClient Client { get; private set; }
+
         /// <summary>
         /// HTTP [GET] Request.
         /// </summary>
@@ -64,7 +66,6 @@ namespace APIFlow
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> RawRequest(HttpMethod method, string endpoint, object? content, bool isQueryParameters)
         {
-            var httpClient = new HttpClient();
             var contentDict = isQueryParameters ? JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(content)) : null;
             var contentDictList = isQueryParameters ? contentDict?.ToList() : null;
             var requestContent = isQueryParameters && contentDictList != null ? new FormUrlEncodedContent(contentDictList) : new StringContent(JsonConvert.SerializeObject(content)) as HttpContent;
@@ -76,10 +77,14 @@ namespace APIFlow
                 RequestUri = new Uri(endpoint)
             };
 
-            var response = await httpClient.SendAsync(request);
+            var response = await this.Client.SendAsync(request);
 
             return response;
         }
 
+        public HttpClientWrapper()
+        {
+            this.Client = new HttpClient();
+        }
     }
 }

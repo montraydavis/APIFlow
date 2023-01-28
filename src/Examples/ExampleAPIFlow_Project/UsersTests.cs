@@ -1,5 +1,4 @@
 using APIFlow;
-using APIFlow.Models;
 
 namespace ExampleAPIFlow_Project
 {
@@ -29,22 +28,28 @@ namespace ExampleAPIFlow_Project
             var fakeDbItems = GetUsersFromDatabase();
 
             // Execute /users endpoint
-            var users = context.Walk<UserContext>();
+            var users = context.Walk<UserContext>().Response;
+            var userInfo = context.Walk<UserInformationContext>().Response;
 
-            Assert.That(users.Response, Is.Not.Null);
+            Assert.That(users, Is.Not.Null);
+            Assert.That(userInfo, Is.Not.Null);
 
             // Resolve value
-            var usersList = context.GetValue<UserContext, User>(users.Response);
+            var usersList = context.GetValue<UserContext, List<User>>(users);
+            var userInformation = context.GetValue<UserInformationContext, UserInformation>(userInfo);
+
+            // Assert /users?id={User.Id}
+            Assert.That(usersList.Any(x => x.Id == userInformation.Id), Is.True);
 
             // Assert Database and API items match.
-            Assert.IsTrue(fakeDbItems.All(x => users.Response != null && users.Response.Any(y =>
+            Assert.IsTrue(fakeDbItems.All(x => users != null && users.Any(y =>
             {
-                if(y is UserContext ctx)
+                if (y is UserContext ctx)
                 {
-
+                    return true;
                 }
 
-                return true;
+                return false;
             })));
         }
 

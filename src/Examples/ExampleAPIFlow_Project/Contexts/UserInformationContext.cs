@@ -1,6 +1,5 @@
 ﻿using APIFlow.Endpoint;
 using APIFlow.Models;
-using ExampleAPIFlow_Project.Fixtures;
 using System.Web.Http;
 
 namespace ExampleAPIFlow_Project.Contexts

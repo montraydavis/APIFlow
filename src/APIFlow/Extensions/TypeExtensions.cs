@@ -3,7 +3,7 @@
     public static class TypeExtensions
     {
         private static Random rng = new Random();
-        
+
         /// <summary>
         /// Shuffle a list.
         /// </summary>

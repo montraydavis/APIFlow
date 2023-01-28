@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>APIFlow</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.1.0</Version>
 		<Authors>Montray Davis</Authors>
 		<Company>Montray Davis</Company>
 		<PackageDescription>The ultimate solution for quick API Integration testing.</PackageDescription>
@@ -17,11 +17,15 @@
 		<PackageProjectUrl>https://github.com/montraydavis/APIFlow</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>API;API Integration Testing</PackageTags>
+		<PackageTags>API Integration Testing</PackageTags>
 		<PackageReleaseNotes>Initial Release</PackageReleaseNotes>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<!--<PackageLicenseFile>LICENSE.md</PackageLicenseFile>-->
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="APIFlow.v3.ncrunchproject" />
+	</ItemGroup>
 
 
 	<ItemGroup>
@@ -40,6 +44,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\APIFlow.Regression\APIFlow.Regression.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
