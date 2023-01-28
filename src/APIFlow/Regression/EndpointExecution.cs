@@ -37,11 +37,11 @@ namespace APIFlow.Regression
 
     public class EndpointExecutionInfo
     {
-        public string Url { get; set; }
+        public string Endpoint { get; set; }
         public EndpointRequestInfo Request { get; set; }
         public EndpointResponseInfo Response { get; set; }
 
-        public EndpointExecutionInfo(string url,
+        public EndpointExecutionInfo(string endpoint,
             IDictionary<string, IEnumerable<string>> requestHeaders,
             string? requestContent,
             IDictionary<string, IEnumerable<string>> responseHeaders,
@@ -49,7 +49,7 @@ namespace APIFlow.Regression
             string? reasonPhrase,
             HttpStatusCode responseStatusCode)
         {
-            this.Url = url;
+            this.Endpoint = endpoint;
             this.Request = new EndpointRequestInfo(requestHeaders, requestContent);
             this.Response = new EndpointResponseInfo(responseHeaders, responseContent, reasonPhrase, responseStatusCode);
         }

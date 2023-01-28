@@ -14,7 +14,7 @@ namespace APIFlow
         /// <summary>
         /// HTTP [GET] Request.
         /// </summary>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> Get(string endpoint)
         {
@@ -24,7 +24,7 @@ namespace APIFlow
         /// <summary>
         /// HTTP [POST] Request.
         /// </summary>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> Post(string endpoint, object content, bool isQueryParameters)
         {
@@ -34,7 +34,7 @@ namespace APIFlow
         /// <summary>
         /// HTTP [PUT] Request.
         /// </summary>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> Put(string endpoint, object content, bool isQueryParameters)
         {
@@ -44,7 +44,7 @@ namespace APIFlow
         /// <summary>
         /// HTTP [PATCH] Request.
         /// </summary>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> Patch(string endpoint, object content, bool isQueryParameters)
         {
@@ -54,7 +54,7 @@ namespace APIFlow
         /// <summary>
         /// HTTP [DELETE] Request.
         /// </summary>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <returns>Http Response Message.</returns>
         public async Task<HttpResponseMessage> Delete(string endpoint, object content, bool isQueryParameters)
         {
@@ -65,7 +65,7 @@ namespace APIFlow
         /// Execute Raw HTTP Request
         /// </summary>
         /// <param name="method">Http Method.</param>
-        /// <param name="endpoint">Endpoint Url.</param>
+        /// <param name="endpoint">Endpoint Endpoint.</param>
         /// <param name="content">Request Payload.</param>
         /// <param name="isQueryParameters">Is Query Parameters?</param>
         /// <returns>Http Response Message.</returns>

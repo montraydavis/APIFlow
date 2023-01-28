@@ -13,7 +13,7 @@ namespace APIFlow.Tests
         private Mock<UserInformationContext_BadConfiguration>? _moqUserInformationBadConfiguration;
         private Mock<UserInformationContext_MissingRoute>? _moqUserInformationMissingRoute;
         private Mock<UserInformationContext_MissingRouteParameter>? _moqUserInformationMissingRouteParameter;
-        private EndpointInputModel _inputModel;
+        private APIFlowInputModel _inputModel;
         private UserInformationContext? _tmpUserInformationContext;
         private UserInformationContext_BadConfiguration? _tmpUserInformationBadConfigurationContext;
         private UserInformationContext_MissingRoute? _tmpUserInformationMissingRouteContext;
@@ -58,7 +58,7 @@ namespace APIFlow.Tests
         [SetUp]
         public void SetupEach()
         {
-            this._inputModel = new EndpointInputModel();
+            this._inputModel = new APIFlowInputModel();
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace APIFlow.Tests
             this._moqUserInformation.Object.ResolveEndpointUrl(this._tmpUserInformationContext);
             this._moqUserInformation.Object.ApplyContext(_inputModel);
 
-            Assert.That($"https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/UserInformation?Id={user.Id}", Is.EqualTo(this._moqUserInformation.Object.EndpointUrl));
+            Assert.That($"https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/UserInformation?Id={user.Id}", Is.EqualTo(this._moqUserInformation.Object.Endpoint));
         }
 
         [Test]

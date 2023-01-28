@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace APIFlow.Endpoint
 {
-    public class EndpointInputModel : IDictionary<string, IList<object>>
+    public class APIFlowInputModel : IDictionary<string, IList<object>>
     {
         private IDictionary<string, IList<object>> inputs;
 
@@ -73,7 +73,7 @@ namespace APIFlow.Endpoint
             return inputs.GetEnumerator();
         }
 
-        public EndpointInputModel()
+        public APIFlowInputModel()
         {
             inputs = new Dictionary<string, IList<object>>();
         }

@@ -1,15 +1,15 @@
 ﻿using APIFlow.Endpoint;
-using APIFlow.Models;
+using APIFlow.Repositories;
 using APIFlow.Tests.Fixtures;
 using System.Web.Http;
 
 namespace APIFlow.Tests.Contexts
 {
-    public class UserContext : ApiContext<List<User>>
+    public class UserContext : ApiContext<List<User>, HTTPDataExtender>
     {
         [HttpGet()]
         [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/Users")]
-        public override void ApplyContext(EndpointInputModel model)
+        public override void ApplyContext(APIFlowInputModel model)
         {
 
         }
@@ -22,7 +22,7 @@ namespace APIFlow.Tests.Contexts
         }
 
         public UserContext(List<User> baseObject,
-            EndpointInputModel inputModel) : base(baseObject, inputModel)
+            APIFlowInputModel inputModel) : base(baseObject, inputModel)
         {
 
         }
