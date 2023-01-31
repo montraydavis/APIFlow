@@ -34,10 +34,17 @@ With APIFlow, step 2 & 3 is removed as the forward-feed capabilities is automati
 
 ![alt text](https://github.com/montraydavis/APIFlow/blob/main/assets/api-flow-chart.png "Flow")
 
-# Example Context
+# Example Test
 
-```
+<details>
+  <summary>User Context /users</summary>
+ 
+```cs
 
+public class User{
+    public int Id { get; set; }
+}
+  
 public class UserContext : ApiContext<List<User>, HTTPDataExtender>
 {
     [HttpGet()]
@@ -60,13 +67,26 @@ public class UserContext : ApiContext<List<User>, HTTPDataExtender>
 
     }
 }
+```
+</details>
 
+
+
+<details>
+  <summary>User Information Context /users?id={id}</summary>
+ 
+```cs
+
+public class UserInformation{
+    public int Id { get; set; }
+    public int Email { get; set; }
+}
+  
 public class UserInformationContext : ApiContext<UserInformation, HTTPDataExtender>
 {
     public override void ConfigureEndpoint(ref string endpoint, EndpointInputModel inputModel, bool randomizedInput = false)
     {
-        base.ConfigureEndpoint(ref endpoint, inputModel, randomizedInput);
-
+        // Add Query Parameter ?id={UserId.Id}
         base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id??0);
     }
     
@@ -74,8 +94,8 @@ public class UserInformationContext : ApiContext<UserInformation, HTTPDataExtend
     [Route("https://aef3c493-6ff3-47a2-be7f-150688405f7e.mock.pstmn.io/UserInformation")]
     public override void ApplyContext(EndpointInputModel inputModel)
     {
+        // Configure model {User.Id} => {UserInformationContext.Id} 
         base.ConfigureModel<UserContext>((u, o) => o.Id = u.Value?[0].Id??0);
-        base.ConfigureEndpoint<UserContext>("Id", (u) => u.Value?[0].Id??0);
     }
 
     public UserInformationContext(UserInformation baseObject, EndpointInputModel inputModel) : base(baseObject, inputModel)
@@ -83,5 +103,15 @@ public class UserInformationContext : ApiContext<UserInformation, HTTPDataExtend
 
     }
 }
+```
+</details>
 
+    
+```cs
+
+var apiCpntext = new APIFlowContext();
+    
+apiContext.Execute<UserContext>()
+    .Execute<UserInformationContext>();
+    
 ```
