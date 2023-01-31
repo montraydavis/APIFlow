@@ -84,7 +84,6 @@ namespace APIFlow
                         && overrideContext != null)
                         overrideContext.Invoke((T)i, this.Inputs);
                 }
-
         }
 
         /// <summary>
@@ -170,7 +169,6 @@ namespace APIFlow
 
         public APIFlowContext()
         {
-
             this._statistics = new List<RegressionStatistic>();
             this.Chain = Enumerable.Empty<ApiContext<HTTPDataExtender>>().ToList().AsReadOnly();
             this.Inputs = new APIFlowInputModel();

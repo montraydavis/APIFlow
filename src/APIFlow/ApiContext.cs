@@ -13,7 +13,6 @@ namespace APIFlow
 
     public abstract class ApiContext
     {
-
         public virtual bool HasBody { get; internal set; } = true;
         public object? ObjectValue { get; internal set; }
         public string Endpoint { get; internal set; }
@@ -22,6 +21,8 @@ namespace APIFlow
 
         public ApiContext(Type t)
         {
+            this.Endpoint = string.Empty;
+
             if (Activator.CreateInstance(t) is IAPIFlowDataExtender dataExtender)
             {
                 DataSource = dataExtender;
@@ -38,8 +39,6 @@ namespace APIFlow
         internal HttpClientWrapper HttpWrapper;
 
         internal APIFlowInputModel Inputs { get; private set; }
-
-
 
         /// <summary>
         /// Get Inputs by Type.
