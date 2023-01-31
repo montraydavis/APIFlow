@@ -51,7 +51,7 @@ namespace APIFlow.Repositories
         /// <param name="httpClient">Http Client Reference.</param>
         /// <returns>Http Response Message.</returns>
         /// <exception cref="Exception"></exception>
-        private async Task<HttpResponseMessage> ExecuteEndpoint<T>(T content, out HttpClient httpClient) where T : ApiContext
+        private HttpResponseMessage ExecuteEndpoint<T>(T content, out HttpClient httpClient) where T : ApiContext
         {
             var httpClientWrapper = new HttpClientWrapper();
 
@@ -77,8 +77,10 @@ namespace APIFlow.Repositories
 
             var httpVerb = this.ConvertAttributeToHttpVerbMethod(httpVerbAttribute);
 
-            var resp = await httpClientWrapper
-                .RawRequest(httpVerb, content.Endpoint, content.HasBody ? content.ObjectValue : null, false); ;
+            var resp =  httpClientWrapper
+                .RawRequest(httpVerb, content.Endpoint, content.HasBody ? content.ObjectValue : null, false)
+                .GetAwaiter()
+                .GetResult();
 
             httpClient = httpClientWrapper.Client;
             return resp;
@@ -91,9 +93,9 @@ namespace APIFlow.Repositories
         /// <param name="content">Request Payload.</param>
         /// <returns>Http Response Message.</returns>
         /// <exception cref="Exception">Error Thrown on Verb Attribute Resolution Failure.</exception>
-        private async Task<HttpResponseMessage> ExecuteEndpoint<T>(T content) where T : ApiContext
+        private HttpResponseMessage ExecuteEndpoint<T>(T content) where T : ApiContext
         {
-            return await this.ExecuteEndpoint(content, out _);
+            return this.ExecuteEndpoint(content, out _);
         }
 
         /// <summary>
@@ -130,9 +132,7 @@ namespace APIFlow.Repositories
         public IReadOnlyList<T> ExecuteDataResource<T>(T instance, APIFlowInputModel inputModel, in IList<RegressionStatistic> statistics) where T : ApiContext
         {
             var requestTimestamp = DateTime.UtcNow;
-            var resp = this.ExecuteEndpoint(instance, out HttpClient httpClient)
-                .GetAwaiter()
-                .GetResult();
+            var resp = this.ExecuteEndpoint(instance, out HttpClient httpClient);
 
             var endpointExecutionInfo = new EndpointExecutionInfo(instance.Endpoint, httpClient.DefaultRequestHeaders.ToDictionary(x => x.Key, x => x.Value), instance.HasBody ? JsonConvert.SerializeObject(instance.ObjectValue) : null,
                 resp.Headers.ToDictionary(x => x.Key, x => x.Value),
